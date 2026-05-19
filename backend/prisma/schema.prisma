@@ -1,0 +1,154 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// User Roles
+model User {
+  id          String   @id @default(uuid())
+  email       String?  @unique
+  phone       String?  @unique
+  firebaseUid String   @unique
+  role        String   @default("CLIENT") // CLIENT, MAID, ADMIN
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  clientProfile ClientProfile?
+  maidProfile   MaidProfile?
+  notifications Notification[]
+  adminLogs     AdminLog[]
+}
+
+// Client Profile
+model ClientProfile {
+  id            String   @id @default(uuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fullName      String
+  gender        String
+  dob           DateTime
+  address       String
+  maritalStatus String
+  mobileNumber  String
+  email         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  bookingThreads BookingThread[]
+  appointments   Appointment[]
+}
+
+// Maid Profile
+model MaidProfile {
+  id               String      @id @default(uuid())
+  userId           String      @unique
+  user             User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fullName         String
+  gender           String
+  dob              DateTime
+  permanentAddress String
+  mobileNumber     String
+  alternateMobile  String?
+  emergencyContact String
+  profilePhotoUrl  String
+  status           String      @default("AVAILABLE") // AVAILABLE, IN_TALKS, APPOINTED
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  services       MaidService[]
+  bookingThreads BookingThread[]
+  appointments   Appointment[]
+}
+
+// Global service list managed by administrator
+model Service {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+
+  maids MaidService[]
+}
+
+// Services and expected salaries offered by specific maids
+model MaidService {
+  id             String      @id @default(uuid())
+  maidProfileId  String
+  maidProfile    MaidProfile @relation(fields: [maidProfileId], references: [id], onDelete: Cascade)
+  serviceId      String
+  service        Service     @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  expectedSalary Float
+
+  @@unique([maidProfileId, serviceId])
+}
+
+// Thread representation of conversations/negotiations between client and maid
+model BookingThread {
+  id        String       @id @default(uuid())
+  clientId  String
+  client    ClientProfile @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  maidId    String
+  maid      MaidProfile   @relation(fields: [maidId], references: [id], onDelete: Cascade)
+  status    String       @default("OPEN") // OPEN, CLOSED
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  requests BookingRequest[]
+
+  @@unique([clientId, maidId, status])
+}
+
+// Employment requests raised within a thread
+model BookingRequest {
+  id           String        @id @default(uuid())
+  threadId     String
+  thread       BookingThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  joiningDate  DateTime
+  workingHours Int
+  finalSalary  Float
+  status       String        @default("PENDING") // PENDING, APPROVED, DECLINED
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+// Active/Terminated appointment entries
+model Appointment {
+  id           String            @id @default(uuid())
+  wabId        String            @unique
+  clientId     String
+  client       ClientProfile     @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  maidId       String
+  maid         MaidProfile       @relation(fields: [maidId], references: [id], onDelete: Cascade)
+  joiningDate  DateTime
+  workingHours Int
+  salary       Float
+  status       String            @default("ACTIVE") // ACTIVE, TERMINATED
+  lastWorkingDay DateTime?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+}
+
+// Bell notification list
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+// Administrator action logger
+model AdminLog {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action    String
+  details   String
+  createdAt DateTime @default(now())
+}
