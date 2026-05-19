@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-cream: #FFF6DE;
+  --color-brand-teal: #8BDFDD;
+  --color-brand-coral: #F48F68;
+  --color-brand-gold: #FFE394;
+  --color-brand-dark: #2C2C2C;
+  --color-brand-light-gray: #FBF9F4;
+  
+  --font-display: 'Outfit', 'Inter', system-ui, sans-serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-spin-slow: spin 12s linear infinite;
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+}
+
+/* Base modifications */
+html {
+  scroll-behavior: smooth;
+  font-family: var(--font-sans);
+  background-color: var(--color-brand-cream);
+  color: var(--color-brand-dark);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #FFF6DE 0%, #FFFDF8 100%);
+  background-attachment: fixed;
+}
+
+/* Glassmorphism light utility */
+.glass-light {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 32px 0 rgba(244, 143, 104, 0.06);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px 0 rgba(244, 143, 104, 0.12);
+  border-color: rgba(244, 143, 104, 0.25);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-brand-cream);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-brand-gold);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-brand-coral);
+}
+
+/* Indian-inspired border motifs */
+.indian-border {
+  border-image: linear-gradient(to right, var(--color-brand-coral), var(--color-brand-gold), var(--color-brand-teal)) 1;
+}
+
+/* Gradient Backgrounds */
+.bg-gradient-warm {
+  background: linear-gradient(135deg, #FFF6DE 0%, #FFE394 100%);
+}
+
+.bg-gradient-coral-gold {
+  background: linear-gradient(135deg, #F48F68 0%, #FFE394 100%);
+}
+
+.bg-gradient-soft-teal {
+  background: linear-gradient(135deg, #8BDFDD 0%, #FFF6DE 100%);
+}
